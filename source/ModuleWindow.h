@@ -4,18 +4,18 @@
 
 using namespace juce;
 namespace PlayfulTones {
-    class PluginGraph;
+    class ProcessorGraph;
 
     /**
         A window that shows a log of parameter change messages sent by the plugin.
     */
-    class PluginDebugWindow final : public AudioProcessorEditor,
+    class ModuleDebugWindow final : public AudioProcessorEditor,
                                     public AudioProcessorParameter::Listener,
                                     public ListBoxModel,
                                     public AsyncUpdater
     {
     public:
-        explicit PluginDebugWindow (AudioProcessor& proc)
+        explicit ModuleDebugWindow (AudioProcessor& proc)
             : AudioProcessorEditor (proc), audioProc (proc)
         {
             setSize (500, 200);
@@ -27,7 +27,7 @@ namespace PlayfulTones {
             log.add ("Parameter debug log started");
         }
 
-        ~PluginDebugWindow() override
+        ~ModuleDebugWindow() override
         {
             for (auto* p : audioProc.getParameters())
                 p->removeListener (this);
@@ -109,7 +109,7 @@ namespace PlayfulTones {
     /**
         A desktop window containing a plugin's GUI.
     */
-    class PluginWindow final : public DocumentWindow
+    class ModuleWindow final : public DocumentWindow
     {
     public:
         enum class Type
@@ -122,7 +122,7 @@ namespace PlayfulTones {
             last = debug,
         };
 
-        PluginWindow (AudioProcessorGraph::Node* n, Type t, OwnedArray<PluginWindow>& windowList)
+        ModuleWindow (AudioProcessorGraph::Node* n, Type t, OwnedArray<ModuleWindow>& windowList)
             : DocumentWindow (n->getProcessor()->getName(),
                 LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
                 DocumentWindow::minimiseButton | DocumentWindow::closeButton),
@@ -147,7 +147,7 @@ namespace PlayfulTones {
             DocumentWindow::setVisible (true);
         }
 
-        ~PluginWindow() override
+        ~ModuleWindow() override
         {
             node->getProcessor()->editorBeingDeleted (dynamic_cast<AudioProcessorEditor*> (getContentComponent()));
             clearContentComponent();
@@ -169,7 +169,7 @@ namespace PlayfulTones {
         static String getLastYProp (Type type)    { return "uiLastY_" + getTypeName (type); }
         static String getOpenProp  (Type type)    { return "uiopen_"  + getTypeName (type); }
 
-        OwnedArray<PluginWindow>& activeWindowList;
+        OwnedArray<ModuleWindow>& activeWindowList;
         const AudioProcessorGraph::Node::Ptr node;
         const Type type;
 
@@ -209,29 +209,29 @@ namespace PlayfulTones {
         [[nodiscard]] float getDesktopScaleFactor() const override     { return 1.0f; }
 
         static AudioProcessorEditor* createProcessorEditor (AudioProcessor& processor,
-            PluginWindow::Type type)
+            ModuleWindow::Type type)
         {
-            if (type == PluginWindow::Type::normal)
+            if (type == ModuleWindow::Type::normal)
             {
                 if (processor.hasEditor())
                     if (auto* ui = processor.createEditorIfNeeded())
                         return ui;
 
-                type = PluginWindow::Type::generic;
+                type = ModuleWindow::Type::generic;
             }
 
-            if (type == PluginWindow::Type::generic)
+            if (type == ModuleWindow::Type::generic)
             {
                 auto* result = new GenericAudioProcessorEditor (processor);
                 result->setResizeLimits (200, 300, 1'000, 10'000);
                 return result;
             }
 
-            if (type == PluginWindow::Type::programs)
+            if (type == ModuleWindow::Type::programs)
                 return new ProgramAudioProcessorEditor (processor);
 
-            if (type == PluginWindow::Type::debug)
-                return new PluginDebugWindow (processor);
+            if (type == ModuleWindow::Type::debug)
+                return new ModuleDebugWindow (processor);
 
             jassertfalse;
             return {};
@@ -327,6 +327,6 @@ namespace PlayfulTones {
             JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ProgramAudioProcessorEditor)
         };
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginWindow)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModuleWindow)
     };
 } // namespace PlayfulTones

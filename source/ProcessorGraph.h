@@ -5,7 +5,7 @@
 #pragma once
 using namespace juce;
 namespace PlayfulTones {
-    class PluginGraph
+    class ProcessorGraph
     {
     public:
         //==============================================================================
@@ -37,8 +37,8 @@ namespace PlayfulTones {
 
 
         //==============================================================================
-        PluginGraph (ModuleFactory& factory, GuiConfig guiConfig = GuiConfig());
-        ~PluginGraph();
+        ProcessorGraph (ModuleFactory& factory, GuiConfig guiConfig = GuiConfig());
+        ~ProcessorGraph();
 
         //==============================================================================
         using NodeID = AudioProcessorGraph::NodeID;
@@ -53,7 +53,7 @@ namespace PlayfulTones {
         std::unique_ptr<XmlElement> createXml() const;
         void restoreFromXml (const XmlElement&);
 
-        void createPlugin (int factoryId, double x, double y);
+        void createModule (int factoryId, double x, double y);
         void addConnection(const AudioProcessorGraph::Connection&);
         void removeConnection(const AudioProcessorGraph::Connection&);
         void removeNode(NodeID);
@@ -67,7 +67,7 @@ namespace PlayfulTones {
         /**
             Used to receive callbacks when the graph's state changes.
 
-        @see PluginGraph::addListener, PluginGraph::removeListener
+        @see ProcessorGraph::addListener, ProcessorGraph::removeListener
         */
         class Listener
         {
@@ -93,7 +93,7 @@ namespace PlayfulTones {
 
         /** Called when a new editor window is requested for a processor.
         */
-        std::function<PluginWindow* (AudioProcessorGraph::Node::Ptr, PluginWindow::Type)> onProcessorWindowRequested;
+        std::function<ModuleWindow* (AudioProcessorGraph::Node::Ptr, ModuleWindow::Type)> onProcessorWindowRequested;
 
         //==============================================================================
         AudioProcessorGraph graph;
@@ -131,6 +131,6 @@ namespace PlayfulTones {
 
         ListenerList<Listener> graphListeners;
 
-        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginGraph)
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ProcessorGraph)
     };
 } // namespace PlayfulTones

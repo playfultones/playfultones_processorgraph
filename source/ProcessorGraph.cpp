@@ -3,17 +3,17 @@
 //
 
 namespace PlayfulTones {
-    PluginGraph::PluginGraph (ModuleFactory& f, GuiConfig guiC)
+    ProcessorGraph::ProcessorGraph (ModuleFactory& f, GuiConfig guiC)
         : factory (f), guiConfig(guiC)
     {
     }
 
-    PluginGraph::~PluginGraph()
+    ProcessorGraph::~ProcessorGraph()
     {
         clear();
     }
 
-    void PluginGraph::setNodePosition (NodeID nodeID, Point<double> pos) const
+    void ProcessorGraph::setNodePosition (NodeID nodeID, Point<double> pos) const
     {
         if (auto* n = graph.getNodeForId (nodeID))
         {
@@ -22,7 +22,7 @@ namespace PlayfulTones {
         }
     }
 
-    Point<double> PluginGraph::getNodePosition (NodeID nodeID) const
+    Point<double> ProcessorGraph::getNodePosition (NodeID nodeID) const
     {
         if (auto* n = graph.getNodeForId (nodeID))
             return { static_cast<double> (n->properties [xPosId]),
@@ -32,7 +32,7 @@ namespace PlayfulTones {
     }
 
     //==============================================================================
-    void PluginGraph::clear()
+    void ProcessorGraph::clear()
     {
         graphListeners.call(&Listener::graphIsAboutToBeCleared);
         graph.clear();
@@ -46,11 +46,11 @@ namespace PlayfulTones {
                                      : busesLayout.outputBuses);
         int maxNumBuses = 0;
 
-        if (auto* buses = xml.getChildByName (isInput ? PluginGraph::inputsAttrName : PluginGraph::outputsAttrName))
+        if (auto* buses = xml.getChildByName (isInput ? ProcessorGraph::inputsAttrName : ProcessorGraph::outputsAttrName))
         {
-            for (auto* e : buses->getChildWithTagNameIterator (PluginGraph::busAttrName))
+            for (auto* e : buses->getChildWithTagNameIterator (ProcessorGraph::busAttrName))
             {
-                const int busIdx = e->getIntAttribute (PluginGraph::indexAttrName);
+                const int busIdx = e->getIntAttribute (ProcessorGraph::indexAttrName);
                 maxNumBuses = jmax (maxNumBuses, busIdx + 1);
 
                 // the number of buses on busesLayout may not be in sync with the plugin after adding buses
@@ -62,7 +62,7 @@ namespace PlayfulTones {
                 for (int actualIdx = targetBuses.size() - 1; actualIdx < busIdx; ++actualIdx)
                     targetBuses.add (plugin.getChannelLayoutOfBus (isInput, busIdx));
 
-                auto layout = e->getStringAttribute (PluginGraph::layoutAttrName);
+                auto layout = e->getStringAttribute (ProcessorGraph::layoutAttrName);
 
                 if (layout.isNotEmpty())
                     targetBuses.getReference (busIdx) = AudioChannelSet::fromAbbreviatedString (layout);
@@ -85,15 +85,15 @@ namespace PlayfulTones {
         auto& buses = isInput ? layout.inputBuses
                               : layout.outputBuses;
 
-        auto* xml = new XmlElement (isInput ? PluginGraph::inputsAttrName : PluginGraph::outputsAttrName);
+        auto* xml = new XmlElement (isInput ? ProcessorGraph::inputsAttrName : ProcessorGraph::outputsAttrName);
 
         for (int busIdx = 0; busIdx < buses.size(); ++busIdx)
         {
             auto& set = buses.getReference (busIdx);
 
-            auto* bus = xml->createNewChildElement (PluginGraph::busAttrName);
-            bus->setAttribute (PluginGraph::indexAttrName, busIdx);
-            bus->setAttribute (PluginGraph::layoutAttrName, set.isDisabled() ? PluginGraph::disabledAttrValue : set.getSpeakerArrangementAsString());
+            auto* bus = xml->createNewChildElement (ProcessorGraph::busAttrName);
+            bus->setAttribute (ProcessorGraph::indexAttrName, busIdx);
+            bus->setAttribute (ProcessorGraph::layoutAttrName, set.isDisabled() ? ProcessorGraph::disabledAttrValue : set.getSpeakerArrangementAsString());
         }
 
         return xml;
@@ -102,38 +102,38 @@ namespace PlayfulTones {
     static XmlElement* createNodeXml (AudioProcessorGraph::Node* const node) noexcept
     {
         auto* processor = node->getProcessor();
-        auto e = new XmlElement (PluginGraph::filterAttrName);
+        auto e = new XmlElement (ProcessorGraph::filterAttrName);
 
-        e->setAttribute (PluginGraph::nodeId,           (int) node->nodeID.uid);
-        e->setAttribute (PluginGraph::xPosId,           node->properties [PluginGraph::xPosId].toString());
-        e->setAttribute (PluginGraph::yPosId,           node->properties [PluginGraph::yPosId].toString());
-        e->setAttribute (PluginGraph::factoryId,        node->properties [PluginGraph::factoryId].toString());
+        e->setAttribute (ProcessorGraph::nodeId,           (int) node->nodeID.uid);
+        e->setAttribute (ProcessorGraph::xPosId,           node->properties [ProcessorGraph::xPosId].toString());
+        e->setAttribute (ProcessorGraph::yPosId,           node->properties [ProcessorGraph::yPosId].toString());
+        e->setAttribute (ProcessorGraph::factoryId,        node->properties [ProcessorGraph::factoryId].toString());
 
-        for (int i = (int)PluginWindow::Type::first; i <= (int)PluginWindow::Type::last; ++i)
+        for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
         {
-            auto type = (PluginWindow::Type) i;
+            auto type = (ModuleWindow::Type) i;
 
-            if (node->properties.contains (PluginWindow::getOpenProp (type)))
+            if (node->properties.contains (ModuleWindow::getOpenProp (type)))
             {
-                e->setAttribute (PluginWindow::getLastXProp (type), node->properties[PluginWindow::getLastXProp (type)].toString());
-                e->setAttribute (PluginWindow::getLastYProp (type), node->properties[PluginWindow::getLastYProp (type)].toString());
-                e->setAttribute (PluginWindow::getOpenProp (type),  node->properties[PluginWindow::getOpenProp (type)].toString());
+                e->setAttribute (ModuleWindow::getLastXProp (type), node->properties[ModuleWindow::getLastXProp (type)].toString());
+                e->setAttribute (ModuleWindow::getLastYProp (type), node->properties[ModuleWindow::getLastYProp (type)].toString());
+                e->setAttribute (ModuleWindow::getOpenProp (type),  node->properties[ModuleWindow::getOpenProp (type)].toString());
             }
         }
 
         MemoryBlock m;
         node->getProcessor()->getStateInformation (m);
-        e->createNewChildElement (PluginGraph::stateAttrName)->addTextElement (m.toBase64Encoding());
+        e->createNewChildElement (ProcessorGraph::stateAttrName)->addTextElement (m.toBase64Encoding());
 
         auto layout = processor->getBusesLayout();
-        auto layouts = e->createNewChildElement (PluginGraph::layoutAttrName);
+        auto layouts = e->createNewChildElement (ProcessorGraph::layoutAttrName);
         layouts->addChildElement (createBusLayoutXml (layout, true));
         layouts->addChildElement (createBusLayoutXml (layout, false));
 
         return e;
     }
 
-    AudioProcessorGraph::Node::Ptr PluginGraph::createNodeFromXml(const XmlElement& xml)
+    AudioProcessorGraph::Node::Ptr ProcessorGraph::createNodeFromXml(const XmlElement& xml)
     {
         auto uid = (uint32)xml.getIntAttribute(nodeId);
         auto factoryIndex = xml.getIntAttribute(factoryId);
@@ -147,7 +147,7 @@ namespace PlayfulTones {
 
         AudioProcessor::BusesLayout layout = processor->getBusesLayout();
 
-        if (auto* layoutElement = xml.getChildByName(PluginGraph::layoutAttrName))
+        if (auto* layoutElement = xml.getChildByName(ProcessorGraph::layoutAttrName))
         {
             readBusLayoutFromXml(layout, *processor, *layoutElement, true);
             readBusLayoutFromXml(layout, *processor, *layoutElement, false);
@@ -155,7 +155,7 @@ namespace PlayfulTones {
 
         processor->setBusesLayout(layout);
 
-        if (auto* stateElement = xml.getChildByName(PluginGraph::stateAttrName))
+        if (auto* stateElement = xml.getChildByName(ProcessorGraph::stateAttrName))
         {
             MemoryBlock state;
             state.fromBase64Encoding(stateElement->getAllSubText());
@@ -168,17 +168,17 @@ namespace PlayfulTones {
             node->properties.set(yPosId, y);
             node->properties.set(factoryId, factoryId);
 
-            for (int i = (int)PluginWindow::Type::first; i <= (int)PluginWindow::Type::last; ++i)
+            for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
             {
-                auto type = (PluginWindow::Type) i;
+                auto type = (ModuleWindow::Type) i;
 
-                if (xml.hasAttribute (PluginWindow::getOpenProp (type)))
+                if (xml.hasAttribute (ModuleWindow::getOpenProp (type)))
                 {
-                    node->properties.set (PluginWindow::getLastXProp (type), xml.getIntAttribute (PluginWindow::getLastXProp (type)));
-                    node->properties.set (PluginWindow::getLastYProp (type), xml.getIntAttribute (PluginWindow::getLastYProp (type)));
-                    node->properties.set (PluginWindow::getOpenProp  (type), xml.getIntAttribute (PluginWindow::getOpenProp (type)));
+                    node->properties.set (ModuleWindow::getLastXProp (type), xml.getIntAttribute (ModuleWindow::getLastXProp (type)));
+                    node->properties.set (ModuleWindow::getLastYProp (type), xml.getIntAttribute (ModuleWindow::getLastYProp (type)));
+                    node->properties.set (ModuleWindow::getOpenProp  (type), xml.getIntAttribute (ModuleWindow::getOpenProp (type)));
 
-                    if (node->properties[PluginWindow::getOpenProp (type)])
+                    if (node->properties[ModuleWindow::getOpenProp (type)])
                     {
                         jassert (node->getProcessor() != nullptr);
 
@@ -195,29 +195,29 @@ namespace PlayfulTones {
         return nullptr;
     }
 
-    std::unique_ptr<XmlElement> PluginGraph::createXml() const
+    std::unique_ptr<XmlElement> ProcessorGraph::createXml() const
     {
-        auto xml = std::make_unique<XmlElement> (PluginGraph::graphAttrName);
+        auto xml = std::make_unique<XmlElement> (ProcessorGraph::graphAttrName);
 
         for (auto* node : graph.getNodes())
             xml->addChildElement (createNodeXml (node));
 
         for (auto& connection : graph.getConnections())
         {
-            auto e = xml->createNewChildElement (PluginGraph::connectionAttrName);
+            auto e = xml->createNewChildElement (ProcessorGraph::connectionAttrName);
 
-            e->setAttribute (PluginGraph::srcFilterAttrName, (int) connection.source.nodeID.uid);
-            e->setAttribute (PluginGraph::srcChannelAttrName, connection.source.channelIndex);
-            e->setAttribute (PluginGraph::dstFilterAttrName, (int) connection.destination.nodeID.uid);
-            e->setAttribute (PluginGraph::dstChannelAttrName, connection.destination.channelIndex);
+            e->setAttribute (ProcessorGraph::srcFilterAttrName, (int) connection.source.nodeID.uid);
+            e->setAttribute (ProcessorGraph::srcChannelAttrName, connection.source.channelIndex);
+            e->setAttribute (ProcessorGraph::dstFilterAttrName, (int) connection.destination.nodeID.uid);
+            e->setAttribute (ProcessorGraph::dstChannelAttrName, connection.destination.channelIndex);
         }
 
         return xml;
     }
 
-    void PluginGraph::restoreFromXml(const XmlElement& xmlElement)
+    void ProcessorGraph::restoreFromXml(const XmlElement& xmlElement)
     {
-        if (!xmlElement.hasTagName(PluginGraph::graphAttrName)) return;
+        if (!xmlElement.hasTagName(ProcessorGraph::graphAttrName)) return;
 
         restoredState = XmlElement(xmlElement);
 
@@ -231,18 +231,18 @@ namespace PlayfulTones {
             };
 
             std::vector<ConnectionConfig> restoredConnections;
-            for (auto* connectionElement : restoredState.getChildWithTagNameIterator(PluginGraph::connectionAttrName))
+            for (auto* connectionElement : restoredState.getChildWithTagNameIterator(ProcessorGraph::connectionAttrName))
             {
                 restoredConnections.push_back({
-                    connectionElement->getIntAttribute(PluginGraph::srcFilterAttrName),
-                    connectionElement->getIntAttribute(PluginGraph::srcChannelAttrName),
-                    connectionElement->getIntAttribute(PluginGraph::dstFilterAttrName),
-                    connectionElement->getIntAttribute(PluginGraph::dstChannelAttrName)
+                    connectionElement->getIntAttribute(ProcessorGraph::srcFilterAttrName),
+                    connectionElement->getIntAttribute(ProcessorGraph::srcChannelAttrName),
+                    connectionElement->getIntAttribute(ProcessorGraph::dstFilterAttrName),
+                    connectionElement->getIntAttribute(ProcessorGraph::dstChannelAttrName)
                 });
             }
 
             clear();
-            for (auto* filterElement : restoredState.getChildWithTagNameIterator(PluginGraph::filterAttrName))
+            for (auto* filterElement : restoredState.getChildWithTagNameIterator(ProcessorGraph::filterAttrName))
             {
                 auto node = createNodeFromXml(*filterElement);
                 if(node != nullptr)
@@ -260,19 +260,19 @@ namespace PlayfulTones {
         });
     }
 
-    void PluginGraph::addConnection (const AudioProcessorGraph::Connection& connection)
+    void ProcessorGraph::addConnection (const AudioProcessorGraph::Connection& connection)
     {
         graph.addConnection (connection);
         graphListeners.call(&Listener::connectionAdded, connection);
     }
 
-    void PluginGraph::removeConnection (const AudioProcessorGraph::Connection& connection)
+    void ProcessorGraph::removeConnection (const AudioProcessorGraph::Connection& connection)
     {
         graph.removeConnection (connection);
         graphListeners.call(&Listener::connectionRemoved, connection);
     }
 
-    void PluginGraph::removeNode (NodeID nodeID)
+    void ProcessorGraph::removeNode (NodeID nodeID)
     {
         if (auto* node = graph.getNodeForId (nodeID))
         {
@@ -281,13 +281,13 @@ namespace PlayfulTones {
         }
     }
 
-    void PluginGraph::removeNode (const AudioProcessorGraph::Node::Ptr& node)
+    void ProcessorGraph::removeNode (const AudioProcessorGraph::Node::Ptr& node)
     {
         if (node != nullptr)
             removeNode (node->nodeID);
     }
 
-    void PluginGraph::disconnectNode (NodeID nodeID)
+    void ProcessorGraph::disconnectNode (NodeID nodeID)
     {
         if (graph.getNodeForId (nodeID) == nullptr)
             return;
@@ -299,13 +299,13 @@ namespace PlayfulTones {
                 graphListeners.call(&Listener::connectionRemoved, c);
     }
 
-    void PluginGraph::disconnectNode (const AudioProcessorGraph::Node::Ptr& node)
+    void ProcessorGraph::disconnectNode (const AudioProcessorGraph::Node::Ptr& node)
     {
         if (node != nullptr)
             disconnectNode (node->nodeID);
     }
 
-    void PluginGraph::createPlugin (int factoryIndex, double x, double y)
+    void ProcessorGraph::createModule (int factoryIndex, double x, double y)
     {
         if (factoryIndex < factory.getNumModules())
         {
@@ -318,12 +318,12 @@ namespace PlayfulTones {
         }
     }
 
-    void PluginGraph::addListener (PluginGraph::Listener* newListener)
+    void ProcessorGraph::addListener (ProcessorGraph::Listener* newListener)
     {
         graphListeners.add (newListener);
     }
 
-    void PluginGraph::removeListener (PluginGraph::Listener* listener)
+    void ProcessorGraph::removeListener (ProcessorGraph::Listener* listener)
     {
         graphListeners.remove (listener);
     }

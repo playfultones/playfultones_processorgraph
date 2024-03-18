@@ -9,5 +9,5 @@
 #include "playfultones_processorgraph/playfultones_processorgraph.h"
 
 #include "source/ModuleFactory.cpp"
-#include "source/PluginGraph.cpp"
+#include "source/ProcessorGraph.cpp"
 #include "source/GraphEditor.cpp"

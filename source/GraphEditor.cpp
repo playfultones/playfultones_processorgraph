@@ -72,7 +72,7 @@ namespace PlayfulTones {
         }
 
         GraphEditorPanel& panel;
-        PluginGraph& graph;
+        ProcessorGraph& graph;
         AudioProcessorGraph::NodeAndChannel pin;
         const bool isInput;
         int busIdx = 0;
@@ -155,7 +155,7 @@ namespace PlayfulTones {
             else if (e.getNumberOfClicks() == 2 && graph.guiConfig.enableProcessorEditorCreation)
             {
                 if (auto f = graph.graph.getNodeForId (pluginID))
-                    if (auto* w = panel.getOrCreateWindowFor (f, PluginWindow::Type::normal))
+                    if (auto* w = panel.getOrCreateWindowFor (f, ModuleWindow::Type::normal))
                         w->toFront (true);
             }
         }
@@ -307,11 +307,11 @@ namespace PlayfulTones {
 
             menu->addSeparator();
             if (getProcessor()->hasEditor())
-                menu->addItem ("Show GUI", [this] { showWindow (PluginWindow::Type::normal); });
+                menu->addItem ("Show GUI", [this] { showWindow (ModuleWindow::Type::normal); });
 
-            menu->addItem ("Show all programs", [this] { showWindow (PluginWindow::Type::programs); });
-            menu->addItem ("Show all parameters", [this] { showWindow (PluginWindow::Type::generic); });
-            menu->addItem ("Show debug log", [this] { showWindow (PluginWindow::Type::debug); });
+            menu->addItem ("Show all programs", [this] { showWindow (ModuleWindow::Type::programs); });
+            menu->addItem ("Show all parameters", [this] { showWindow (ModuleWindow::Type::generic); });
+            menu->addItem ("Show debug log", [this] { showWindow (ModuleWindow::Type::debug); });
 
             menu->addSeparator();
             menu->addItem ("Test state save/load", [this] { testStateSaveLoad(); });
@@ -333,7 +333,7 @@ namespace PlayfulTones {
             }
         }
 
-        void showWindow (PluginWindow::Type type)
+        void showWindow (ModuleWindow::Type type)
         {
             if (auto node = graph.graph.getNodeForId (pluginID))
                 if (auto* w = panel.getOrCreateWindowFor (node, type))
@@ -405,7 +405,7 @@ namespace PlayfulTones {
         }
 
         GraphEditorPanel& panel;
-        PluginGraph& graph;
+        ProcessorGraph& graph;
         const AudioProcessorGraph::NodeID pluginID;
         OwnedArray<PinComponent> pins;
         int numInputs = 0, numOutputs = 0;
@@ -605,7 +605,7 @@ namespace PlayfulTones {
         }
 
         GraphEditorPanel& panel;
-        PluginGraph& graph;
+        ProcessorGraph& graph;
         AudioProcessorGraph::Connection connection { { {}, 0 }, { {}, 0 } };
         Point<float> lastInputPos, lastOutputPos;
         Path linePath, hitPath;
@@ -616,12 +616,12 @@ namespace PlayfulTones {
 
 
     //==============================================================================
-    GraphEditorPanel::GraphEditorPanel (PluginGraph& g)  : graph (g)
+    GraphEditorPanel::GraphEditorPanel (ProcessorGraph& g)  : graph (g)
     {
         graph.addListener(this);
         graph.graph.addChangeListener (this);
         setOpaque (true);
-        graph.onProcessorWindowRequested = [this] (AudioProcessorGraph::Node::Ptr node, PluginWindow::Type type) -> PluginWindow*
+        graph.onProcessorWindowRequested = [this] (AudioProcessorGraph::Node::Ptr node, ModuleWindow::Type type) -> ModuleWindow*
         {
             if(graph.guiConfig.enableProcessorEditorCreation)
                 return getOrCreateWindowFor (node, type);
@@ -693,29 +693,29 @@ namespace PlayfulTones {
     {
         updateComponents();
 
-        for (int i = activePluginWindows.size(); --i >= 0;)
-            if (! graph.graph.getNodes().contains (activePluginWindows.getUnchecked (i)->node))
-                activePluginWindows.remove (i);
+        for (int i = activeModuleWindows.size(); --i >= 0;)
+            if (! graph.graph.getNodes().contains (activeModuleWindows.getUnchecked (i)->node))
+                activeModuleWindows.remove (i);
     }
 
-    bool GraphEditorPanel::closeAnyOpenPluginWindows()
+    bool GraphEditorPanel::closeAnyOpenModuleWindows()
     {
-        bool wasEmpty = activePluginWindows.isEmpty();
-        activePluginWindows.clear();
+        bool wasEmpty = activeModuleWindows.isEmpty();
+        activeModuleWindows.clear();
         return ! wasEmpty;
     }
 
     void GraphEditorPanel::graphIsAboutToBeCleared()
     {
-        closeAnyOpenPluginWindows();
+        closeAnyOpenModuleWindows();
     }
 
-    PluginWindow* GraphEditorPanel::getOrCreateWindowFor (AudioProcessorGraph::Node* node, PluginWindow::Type type)
+    ModuleWindow* GraphEditorPanel::getOrCreateWindowFor (AudioProcessorGraph::Node* node, ModuleWindow::Type type)
     {
         if(node == nullptr)
             return nullptr;
 
-        for (auto* w : activePluginWindows)
+        for (auto* w : activeModuleWindows)
             if (w->node.get() == node && w->type == type)
                 return w;
 
@@ -725,7 +725,7 @@ namespace PlayfulTones {
             {
                 return nullptr;
             }
-            return activePluginWindows.add (new PluginWindow (node, type, activePluginWindows));
+            return activeModuleWindows.add (new ModuleWindow (node, type, activeModuleWindows));
         }
 
         return nullptr;
@@ -786,7 +786,7 @@ namespace PlayfulTones {
                         if (findParentComponentOfClass<GraphEditor>() && r > 0)
                         {
                             const auto point = mousePos.toDouble() / Point<double> ((double) getWidth(), (double) getHeight());
-                            graph.createPlugin(r - 1, point.getX(), point.getY());
+                            graph.createModule(r - 1, point.getX(), point.getY());
                         }
                     }));
         }
@@ -931,7 +931,7 @@ namespace PlayfulTones {
     };
 
     //==============================================================================
-    GraphDocumentComponent::GraphDocumentComponent (PluginGraph& g)
+    GraphDocumentComponent::GraphDocumentComponent (ProcessorGraph& g)
         : graph (g)
     {
         init();
@@ -969,7 +969,7 @@ namespace PlayfulTones {
         graphPanel->setBounds (r);
     }
 
-    GraphEditor::GraphEditor (juce::AudioProcessor& p, PluginGraph& g)
+    GraphEditor::GraphEditor (juce::AudioProcessor& p, ProcessorGraph& g)
         : AudioProcessorEditor (&p),
           audioProcessor (p),
           graphDocumentComponent(g)

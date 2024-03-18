@@ -7,15 +7,15 @@ using namespace juce;
 namespace PlayfulTones {
     //==============================================================================
     /**
-        A panel that displays and edits a PluginGraph.
+        A panel that displays and edits a ProcessorGraph.
     */
     class GraphEditorPanel final : public Component,
                                    public ChangeListener,
-                                   private PluginGraph::Listener
+                                   private ProcessorGraph::Listener
     {
     public:
         //==============================================================================
-        explicit GraphEditorPanel (PluginGraph& graph);
+        explicit GraphEditorPanel (ProcessorGraph& graph);
         ~GraphEditorPanel() override;
 
         void paint (Graphics&) override;
@@ -27,8 +27,8 @@ namespace PlayfulTones {
 
         //==============================================================================
         void updateComponents();
-        PluginWindow* getOrCreateWindowFor (AudioProcessorGraph::Node*, PluginWindow::Type);
-        bool closeAnyOpenPluginWindows();
+        ModuleWindow* getOrCreateWindowFor (AudioProcessorGraph::Node*, ModuleWindow::Type);
+        bool closeAnyOpenModuleWindows();
 
         void graphIsAboutToBeCleared () override;
 
@@ -43,7 +43,7 @@ namespace PlayfulTones {
         void endDraggingConnector (const MouseEvent&);
 
         //==============================================================================
-        PluginGraph& graph;
+        ProcessorGraph& graph;
 
     private:
         struct PluginComponent;
@@ -54,7 +54,7 @@ namespace PlayfulTones {
         OwnedArray<ConnectorComponent> connectors;
         std::unique_ptr<ConnectorComponent> draggingConnector;
         std::unique_ptr<PopupMenu> menu;
-        OwnedArray<PluginWindow> activePluginWindows;
+        OwnedArray<ModuleWindow> activeModuleWindows;
 
         [[nodiscard]] PluginComponent* getComponentForPlugin (AudioProcessorGraph::NodeID) const;
         [[nodiscard]] ConnectorComponent* getComponentForConnection (const AudioProcessorGraph::Connection&) const;
@@ -70,7 +70,7 @@ namespace PlayfulTones {
     class GraphDocumentComponent final : public Component
     {
     public:
-        explicit GraphDocumentComponent (PluginGraph& g);
+        explicit GraphDocumentComponent (ProcessorGraph& g);
 
         ~GraphDocumentComponent() override;
 
@@ -79,7 +79,7 @@ namespace PlayfulTones {
 
         //==============================================================================
         std::unique_ptr<GraphEditorPanel> graphPanel;
-        PluginGraph& graph;
+        ProcessorGraph& graph;
 
     private:
         struct TooltipBar;
@@ -96,7 +96,7 @@ namespace PlayfulTones {
     class GraphEditor : public juce::AudioProcessorEditor
     {
     public:
-        GraphEditor (juce::AudioProcessor& p, PluginGraph& g);
+        GraphEditor (juce::AudioProcessor& p, ProcessorGraph& g);
         ~GraphEditor() override;
 
     private:

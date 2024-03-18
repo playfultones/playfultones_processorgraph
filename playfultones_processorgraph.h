@@ -18,6 +18,6 @@ END_JUCE_MODULE_DECLARATION
 #include <juce_gui_extra/juce_gui_extra.h>
 
 #include "source/ModuleFactory.h"
-#include "source/PluginWindow.h"
-#include "source/PluginGraph.h"
+#include "source/ModuleWindow.h"
+#include "source/ProcessorGraph.h"
 #include "source/GraphEditor.h"
