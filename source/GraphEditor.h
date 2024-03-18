@@ -27,7 +27,7 @@ namespace PlayfulTones {
 
         //==============================================================================
         void updateComponents();
-        ModuleWindow* getOrCreateWindowFor (AudioProcessorGraph::Node*, ModuleWindow::Type);
+        ModuleWindow* getOrCreateWindowFor (AudioProcessorGraph::Node::Ptr, ModuleWindow::Type);
         bool closeAnyOpenModuleWindows();
 
         void graphIsAboutToBeCleared () override;

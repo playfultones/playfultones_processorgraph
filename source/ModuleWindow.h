@@ -122,7 +122,7 @@ namespace PlayfulTones {
             last = debug,
         };
 
-        ModuleWindow (AudioProcessorGraph::Node* n, Type t, OwnedArray<ModuleWindow>& windowList)
+        ModuleWindow (AudioProcessorGraph::Node::Ptr n, Type t, OwnedArray<ModuleWindow>& windowList)
             : DocumentWindow (n->getProcessor()->getName(),
                 LookAndFeel::getDefaultLookAndFeel().findColour (ResizableWindow::backgroundColourId),
                 DocumentWindow::minimiseButton | DocumentWindow::closeButton),

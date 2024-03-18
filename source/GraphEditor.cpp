@@ -710,7 +710,7 @@ namespace PlayfulTones {
         closeAnyOpenModuleWindows();
     }
 
-    ModuleWindow* GraphEditorPanel::getOrCreateWindowFor (AudioProcessorGraph::Node* node, ModuleWindow::Type type)
+    ModuleWindow* GraphEditorPanel::getOrCreateWindowFor (AudioProcessorGraph::Node::Ptr node, ModuleWindow::Type type)
     {
         if(node == nullptr)
             return nullptr;
