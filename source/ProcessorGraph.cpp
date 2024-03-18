@@ -305,7 +305,7 @@ namespace PlayfulTones {
             disconnectNode (node->nodeID);
     }
 
-    void ProcessorGraph::createModule (int factoryIndex, double x, double y)
+    juce::AudioProcessorGraph::Node::Ptr ProcessorGraph::createModule (int factoryIndex, double x, double y)
     {
         if (factoryIndex < factory.getNumModules())
         {
@@ -315,7 +315,10 @@ namespace PlayfulTones {
             node->properties.set (yPosId, y);
             node->properties.set(factoryId, factoryIndex);
             graphListeners.call(&Listener::nodeAdded, node->nodeID);
+            return node;
         }
+
+        return nullptr;
     }
 
     void ProcessorGraph::addListener (ProcessorGraph::Listener* newListener)

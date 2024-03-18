@@ -53,7 +53,7 @@ namespace PlayfulTones {
         std::unique_ptr<XmlElement> createXml() const;
         void restoreFromXml (const XmlElement&);
 
-        void createModule (int factoryId, double x, double y);
+        juce::AudioProcessorGraph::Node::Ptr createModule (int factoryId, double x = .5, double y = .5);
         void addConnection(const AudioProcessorGraph::Connection&);
         void removeConnection(const AudioProcessorGraph::Connection&);
         void removeNode(NodeID);
