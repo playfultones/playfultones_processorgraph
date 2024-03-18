@@ -985,4 +985,19 @@ namespace PlayfulTones {
         auto b = getLocalBounds();
         graphDocumentComponent.setBounds (b);
     }
+
+    GraphWindow::GraphWindow (ProcessorGraph& g)
+            : DocumentWindow("Graph", Colours::lightgrey, DocumentWindow::allButtons, true)
+            , graphDocumentComponent(g)
+    {
+        setUsingNativeTitleBar (true);
+        setContentOwned (&graphDocumentComponent, true);
+        centreWithSize (800, 600);
+    }
+
+    GraphWindow::~GraphWindow() = default;
+
+    void GraphWindow::closeButtonPressed()
+    {
+    }
 } // namespace PlayfulTones

@@ -107,4 +107,16 @@ namespace PlayfulTones {
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GraphEditor)
     };
+
+    class GraphWindow final : public DocumentWindow
+    {
+    public:
+        GraphWindow (ProcessorGraph& graph);
+        ~GraphWindow() override;
+
+        void closeButtonPressed() override;
+    private:
+        GraphDocumentComponent graphDocumentComponent;
+        JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (GraphWindow)
+    };
 } // namespace PlayfulTones
