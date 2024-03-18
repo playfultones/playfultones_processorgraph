@@ -7,6 +7,11 @@ namespace PlayfulTones {
     {
     }
 
+    ModuleFactory::ModuleFactory(std::vector<Constructor> cCollection)
+            : constructors(std::move(cCollection))
+    {
+    }
+
     juce::StringArray ModuleFactory::getNames() const
     {
         juce::StringArray names;

@@ -8,6 +8,7 @@ namespace PlayfulTones {
         using Constructor = std::function<std::unique_ptr<juce::AudioProcessor>()>;
 
         ModuleFactory(std::initializer_list<Constructor> constructors);
+        ModuleFactory(std::vector<Constructor> constructors);
         [[nodiscard]] juce::StringArray getNames() const;
 
         std::unique_ptr<juce::AudioProcessor> createProcessor(int index);
