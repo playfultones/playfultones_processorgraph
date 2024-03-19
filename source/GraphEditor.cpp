@@ -767,6 +767,10 @@ namespace PlayfulTones {
                 comp->setInput (c.source);
                 comp->setOutput (c.destination);
             }
+            else
+            {
+                getComponentForConnection (c)->update();
+            }
         }
     }
 
