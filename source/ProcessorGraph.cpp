@@ -166,7 +166,7 @@ namespace PlayfulTones {
         {
             node->properties.set(xPosId, x);
             node->properties.set(yPosId, y);
-            node->properties.set(factoryId, factoryId);
+            node->properties.set(factoryId, factoryIndex);
 
             for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
             {
