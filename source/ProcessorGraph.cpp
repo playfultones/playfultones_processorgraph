@@ -221,43 +221,40 @@ namespace PlayfulTones {
 
         restoredState = XmlElement(xmlElement);
 
-        juce::MessageManager::callAsync([this]()
+        struct ConnectionConfig {
+            int srcFilter;
+            int srcChannel;
+            int dstFilter;
+            int dstChannel;
+        };
+
+        std::vector<ConnectionConfig> restoredConnections;
+        for (auto* connectionElement : restoredState.getChildWithTagNameIterator(ProcessorGraph::connectionAttrName))
         {
-            struct ConnectionConfig {
-                int srcFilter;
-                int srcChannel;
-                int dstFilter;
-                int dstChannel;
+            restoredConnections.push_back({
+                connectionElement->getIntAttribute(ProcessorGraph::srcFilterAttrName),
+                connectionElement->getIntAttribute(ProcessorGraph::srcChannelAttrName),
+                connectionElement->getIntAttribute(ProcessorGraph::dstFilterAttrName),
+                connectionElement->getIntAttribute(ProcessorGraph::dstChannelAttrName)
+            });
+        }
+
+        clear();
+        for (auto* filterElement : restoredState.getChildWithTagNameIterator(ProcessorGraph::filterAttrName))
+        {
+            auto node = createNodeFromXml(*filterElement);
+            if(node != nullptr)
+                graphListeners.call(&Listener::nodeAdded, node->nodeID);
+        }
+        for (auto& conn : restoredConnections)
+        {
+            const auto connection = AudioProcessorGraph::Connection{
+                {NodeID(static_cast<uint32>(conn.srcFilter)), conn.srcChannel},
+                {NodeID(static_cast<uint32>(conn.dstFilter)), conn.dstChannel}
             };
-
-            std::vector<ConnectionConfig> restoredConnections;
-            for (auto* connectionElement : restoredState.getChildWithTagNameIterator(ProcessorGraph::connectionAttrName))
-            {
-                restoredConnections.push_back({
-                    connectionElement->getIntAttribute(ProcessorGraph::srcFilterAttrName),
-                    connectionElement->getIntAttribute(ProcessorGraph::srcChannelAttrName),
-                    connectionElement->getIntAttribute(ProcessorGraph::dstFilterAttrName),
-                    connectionElement->getIntAttribute(ProcessorGraph::dstChannelAttrName)
-                });
-            }
-
-            clear();
-            for (auto* filterElement : restoredState.getChildWithTagNameIterator(ProcessorGraph::filterAttrName))
-            {
-                auto node = createNodeFromXml(*filterElement);
-                if(node != nullptr)
-                    graphListeners.call(&Listener::nodeAdded, node->nodeID);
-            }
-            for (auto& conn : restoredConnections)
-            {
-                const auto connection = AudioProcessorGraph::Connection{
-                    {NodeID(static_cast<uint32>(conn.srcFilter)), conn.srcChannel},
-                    {NodeID(static_cast<uint32>(conn.dstFilter)), conn.dstChannel}
-                };
-                addConnection(connection);
-            }
-            graph.removeIllegalConnections();
-        });
+            addConnection(connection);
+        }
+        graph.removeIllegalConnections();
     }
 
     void ProcessorGraph::addConnection (const AudioProcessorGraph::Connection& connection)
