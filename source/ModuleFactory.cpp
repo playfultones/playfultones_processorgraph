@@ -3,11 +3,16 @@
 //
 namespace PlayfulTones {
     ModuleFactory::ModuleFactory(std::initializer_list<Constructor> cCollection)
-        : constructors(cCollection)
+            : constructors(createMapFromCollection(cCollection))
     {
     }
 
-    ModuleFactory::ModuleFactory(std::vector<Constructor> cCollection)
+    ModuleFactory::ModuleFactory(const std::vector<Constructor>& cCollection)
+            : constructors(createMapFromCollection(cCollection))
+    {
+    }
+
+    ModuleFactory::ModuleFactory(std::unordered_map<int, Constructor> cCollection)
             : constructors(std::move(cCollection))
     {
     }
@@ -15,14 +20,16 @@ namespace PlayfulTones {
     juce::StringArray ModuleFactory::getNames() const
     {
         juce::StringArray names;
-        for (const auto& constructor : constructors)
-            names.add(constructor()->getName());
+        for (const auto& pair : constructors)
+            names.add(pair.second()->getName());
         return names;
     }
 
     std::unique_ptr<juce::AudioProcessor> ModuleFactory::createProcessor(int index)
     {
-        return constructors[static_cast<size_t>(index)]();
+        if (auto it = constructors.find(index); it != constructors.end())
+            return it->second();
+        return nullptr;
     }
 
     int ModuleFactory::getNumModules() const
