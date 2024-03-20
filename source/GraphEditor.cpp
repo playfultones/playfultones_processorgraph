@@ -621,7 +621,7 @@ namespace PlayfulTones {
         graph.addListener(this);
         graph.graph.addChangeListener (this);
         setOpaque (true);
-        graph.onProcessorWindowRequested = [this] (AudioProcessorGraph::Node::Ptr node, ModuleWindow::Type type) -> ModuleWindow*
+        graph.onProcessorWindowRequested = [this] (const AudioProcessorGraph::Node::Ptr& node, ModuleWindow::Type type) -> ModuleWindow*
         {
             if(graph.guiConfig.enableProcessorEditorCreation)
                 return getOrCreateWindowFor (node, type);
@@ -710,13 +710,13 @@ namespace PlayfulTones {
         closeAnyOpenModuleWindows();
     }
 
-    ModuleWindow* GraphEditorPanel::getOrCreateWindowFor (AudioProcessorGraph::Node::Ptr node, ModuleWindow::Type type)
+    ModuleWindow* GraphEditorPanel::getOrCreateWindowFor (const AudioProcessorGraph::Node::Ptr& node, ModuleWindow::Type type)
     {
         if(node == nullptr)
             return nullptr;
 
         for (auto* w : activeModuleWindows)
-            if (w->node.get() == node && w->type == type)
+            if (w->node == node && w->type == type)
                 return w;
 
         if (auto* processor = node->getProcessor())
