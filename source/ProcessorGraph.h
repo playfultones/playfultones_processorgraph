@@ -104,10 +104,19 @@ namespace PlayfulTones {
         static inline const juce::String xPosId = "x";
         static inline const juce::String yPosId = "y";
         static inline const juce::String factoryId = "factoryId";
-        static inline const juce::String instanceId = "nodeInstanceId";
         static inline const juce::String nodeId = "uid";
 
+        static inline const juce::String valueTag = "value";
+        static inline const juce::String nameTag = "name";
+        static inline const juce::String typeTag = "type";
+
+        static inline const juce::String boolValue = "bool";
+        static inline const juce::String intValue = "int";
+        static inline const juce::String floatValue = "float";
+        static inline const juce::String stringValue = "string";
+
         static inline const juce::String stateAttrName = "STATE";
+        static inline const juce::String propertyAttrName = "PROPERTY";
         static inline const juce::String graphAttrName = "FILTERGRAPH";
         static inline const juce::String connectionAttrName = "CONNECTION";
         static inline const juce::String srcFilterAttrName = "srcFilter";
@@ -121,7 +130,6 @@ namespace PlayfulTones {
         static inline const juce::String busAttrName = "BUS";
         static inline const juce::String indexAttrName = "index";
         static inline const juce::String disabledAttrValue = "disabled";
-
 
     private:
         //==============================================================================

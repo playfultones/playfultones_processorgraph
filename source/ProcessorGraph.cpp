@@ -104,11 +104,36 @@ namespace PlayfulTones {
         auto* processor = node->getProcessor();
         auto e = new XmlElement (ProcessorGraph::filterAttrName);
 
-        e->setAttribute (ProcessorGraph::nodeId,           (int) node->nodeID.uid);
-        e->setAttribute (ProcessorGraph::xPosId,           node->properties [ProcessorGraph::xPosId].toString());
-        e->setAttribute (ProcessorGraph::yPosId,           node->properties [ProcessorGraph::yPosId].toString());
-        e->setAttribute (ProcessorGraph::factoryId,        node->properties [ProcessorGraph::factoryId].toString());
-        e->setAttribute (ProcessorGraph::instanceId,       node->properties [ProcessorGraph::instanceId].toString());
+        auto* uidElement = e->createNewChildElement (ProcessorGraph::propertyAttrName);
+        uidElement->setAttribute (ProcessorGraph::nameTag, ProcessorGraph::nodeId);
+        uidElement->setAttribute (ProcessorGraph::typeTag, ProcessorGraph::intValue);
+        uidElement->setAttribute (ProcessorGraph::valueTag, (int) node->nodeID.uid);
+
+        for(const auto& prop : node->properties)
+        {
+            auto* propElement = e->createNewChildElement (ProcessorGraph::propertyAttrName);
+            propElement->setAttribute (ProcessorGraph::nameTag, prop.name.toString());
+            if(prop.value.isInt())
+            {
+                propElement->setAttribute (ProcessorGraph::typeTag, ProcessorGraph::intValue);
+                propElement->setAttribute (ProcessorGraph::valueTag, prop.value.toString());
+            }
+            else if(prop.value.isDouble())
+            {
+                propElement->setAttribute (ProcessorGraph::typeTag, ProcessorGraph::floatValue);
+                propElement->setAttribute (ProcessorGraph::valueTag, prop.value.toString());
+            }
+            else if(prop.value.isString())
+            {
+                propElement->setAttribute (ProcessorGraph::typeTag, ProcessorGraph::stringValue);
+                propElement->setAttribute (ProcessorGraph::valueTag, prop.value.toString());
+            }
+            else if(prop.value.isBool())
+            {
+                propElement->setAttribute (ProcessorGraph::typeTag, ProcessorGraph::boolValue);
+                propElement->setAttribute (ProcessorGraph::valueTag, prop.value.toString());
+            }
+        }
 
         for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
         {
@@ -136,11 +161,24 @@ namespace PlayfulTones {
 
     AudioProcessorGraph::Node::Ptr ProcessorGraph::createNodeFromXml(const XmlElement& xml)
     {
-        auto uid = (uint32)xml.getIntAttribute(nodeId);
-        auto factoryIndex = xml.getIntAttribute(factoryId);
-        auto x = xml.getDoubleAttribute(xPosId);
-        auto y = xml.getDoubleAttribute(yPosId);
-        auto instanceIndex = xml.getIntAttribute(instanceId);
+        const auto properties = xml.getChildWithTagNameIterator(ProcessorGraph::propertyAttrName);
+
+        if (properties == nullptr)
+            return nullptr;
+
+        uint32 uid = -1;
+        int factoryIndex = -1;
+        for(auto* propElement : properties)
+        {
+            auto name = propElement->getStringAttribute(ProcessorGraph::nameTag);
+            if(name == ProcessorGraph::nodeId)
+                uid = static_cast<uint32>(propElement->getIntAttribute(ProcessorGraph::valueTag));
+            else if(name == ProcessorGraph::factoryId)
+                factoryIndex = propElement->getIntAttribute(ProcessorGraph::valueTag);
+        }
+
+        if(uid == -1 || factoryIndex == -1)
+            return nullptr;
 
         auto processor = factory.createProcessor(factoryIndex);
 
@@ -166,10 +204,21 @@ namespace PlayfulTones {
 
         if (auto node = graph.addNode(std::move(processor), NodeID(uid)))
         {
-            node->properties.set(xPosId, x);
-            node->properties.set(yPosId, y);
-            node->properties.set(factoryId, factoryIndex);
-            node->properties.set(instanceId, instanceIndex);
+            for(auto* propElement : properties)
+            {
+                auto name = propElement->getStringAttribute(ProcessorGraph::nameTag);
+                auto type = propElement->getStringAttribute(ProcessorGraph::typeTag);
+                auto var = juce::var();
+                if(type == ProcessorGraph::intValue)
+                    var = propElement->getIntAttribute(ProcessorGraph::valueTag);
+                else if(type == ProcessorGraph::floatValue)
+                    var = propElement->getDoubleAttribute(ProcessorGraph::valueTag);
+                else if(type == ProcessorGraph::stringValue)
+                    var = propElement->getStringAttribute(ProcessorGraph::valueTag);
+                else if(type == ProcessorGraph::boolValue)
+                    var = propElement->getBoolAttribute(ProcessorGraph::valueTag);
+                node->properties.set(name, var);
+            }
 
             for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
             {
