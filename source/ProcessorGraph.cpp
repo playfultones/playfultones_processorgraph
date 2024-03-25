@@ -304,18 +304,15 @@ namespace PlayfulTones {
 
     juce::AudioProcessorGraph::Node::Ptr ProcessorGraph::createModule (int factoryIndex, double x, double y)
     {
-        if (factoryIndex < factory.getNumModules())
-        {
-            auto node = graph.addNode (factory.createProcessor(factoryIndex));
-            node->getProcessor()->enableAllBuses();
-            node->properties.set (xPosId, x);
-            node->properties.set (yPosId, y);
-            node->properties.set(factoryId, factoryIndex);
-            graphListeners.call(&Listener::nodeAdded, node->nodeID);
-            return node;
-        }
-
-        return nullptr;
+        auto node = graph.addNode (factory.createProcessor(factoryIndex));
+        if(node == nullptr)
+            return nullptr;
+        node->getProcessor()->enableAllBuses();
+        node->properties.set (xPosId, x);
+        node->properties.set (yPosId, y);
+        node->properties.set(factoryId, factoryIndex);
+        graphListeners.call(&Listener::nodeAdded, node->nodeID);
+        return node;
     }
 
     void ProcessorGraph::addListener (ProcessorGraph::Listener* newListener)
