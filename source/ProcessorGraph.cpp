@@ -108,6 +108,7 @@ namespace PlayfulTones {
         e->setAttribute (ProcessorGraph::xPosId,           node->properties [ProcessorGraph::xPosId].toString());
         e->setAttribute (ProcessorGraph::yPosId,           node->properties [ProcessorGraph::yPosId].toString());
         e->setAttribute (ProcessorGraph::factoryId,        node->properties [ProcessorGraph::factoryId].toString());
+        e->setAttribute (ProcessorGraph::instanceId,       node->properties [ProcessorGraph::instanceId].toString());
 
         for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
         {
@@ -139,6 +140,7 @@ namespace PlayfulTones {
         auto factoryIndex = xml.getIntAttribute(factoryId);
         auto x = xml.getDoubleAttribute(xPosId);
         auto y = xml.getDoubleAttribute(yPosId);
+        auto instanceIndex = xml.getIntAttribute(instanceId);
 
         auto processor = factory.createProcessor(factoryIndex);
 
@@ -167,6 +169,7 @@ namespace PlayfulTones {
             node->properties.set(xPosId, x);
             node->properties.set(yPosId, y);
             node->properties.set(factoryId, factoryIndex);
+            node->properties.set(instanceId, instanceIndex);
 
             for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
             {

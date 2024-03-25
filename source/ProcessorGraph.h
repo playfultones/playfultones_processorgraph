@@ -104,6 +104,7 @@ namespace PlayfulTones {
         static inline const juce::String xPosId = "x";
         static inline const juce::String yPosId = "y";
         static inline const juce::String factoryId = "factoryId";
+        static inline const juce::String instanceId = "nodeInstanceId";
         static inline const juce::String nodeId = "uid";
 
         static inline const juce::String stateAttrName = "STATE";
