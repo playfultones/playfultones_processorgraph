@@ -166,13 +166,13 @@ namespace PlayfulTones {
         if (properties == nullptr)
             return nullptr;
 
-        uint32 uid = -1;
-        int factoryIndex = -1;
+        auto uid = -1;
+        auto factoryIndex = -1;
         for(auto* propElement : properties)
         {
             auto name = propElement->getStringAttribute(ProcessorGraph::nameTag);
             if(name == ProcessorGraph::nodeId)
-                uid = static_cast<uint32>(propElement->getIntAttribute(ProcessorGraph::valueTag));
+                uid = static_cast<int>(propElement->getIntAttribute(ProcessorGraph::valueTag));
             else if(name == ProcessorGraph::factoryId)
                 factoryIndex = propElement->getIntAttribute(ProcessorGraph::valueTag);
         }
@@ -202,7 +202,7 @@ namespace PlayfulTones {
             processor->setStateInformation(state.getData(), static_cast<int>(state.getSize()));
         }
 
-        if (auto node = graph.addNode(std::move(processor), NodeID(uid)))
+        if (auto node = graph.addNode(std::move(processor), NodeID(static_cast<uint32>(uid))))
         {
             for(auto* propElement : properties)
             {
