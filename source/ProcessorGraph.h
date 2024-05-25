@@ -104,6 +104,7 @@ namespace PlayfulTones {
         static inline const juce::String xPosId = "x";
         static inline const juce::String yPosId = "y";
         static inline const juce::String factoryId = "factoryId";
+        static inline const juce::String instanceId = "nodeInstanceId";
         static inline const juce::String nodeId = "uid";
 
         static inline const juce::String valueTag = "value";
@@ -139,6 +140,9 @@ namespace PlayfulTones {
         XmlElement restoredState { "RestoredState" };
 
         ListenerList<Listener> graphListeners;
+
+        std::map<int, int> factoryIdToNextInstanceIdMap;
+        int getNextInstanceId(int factoryId);
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ProcessorGraph)
     };

@@ -36,6 +36,7 @@ namespace PlayfulTones {
     {
         graphListeners.call(&Listener::graphIsAboutToBeCleared);
         graph.clear();
+        factoryIdToNextInstanceIdMap.clear();
     }
 
     //==============================================================================
@@ -363,6 +364,7 @@ namespace PlayfulTones {
         node->properties.set (xPosId, x);
         node->properties.set (yPosId, y);
         node->properties.set(factoryId, factoryIndex);
+        node->properties.set(instanceId, getNextInstanceId(factoryIndex));
         graphListeners.call(&Listener::nodeAdded, node->nodeID);
         return node;
     }
@@ -375,5 +377,12 @@ namespace PlayfulTones {
     void ProcessorGraph::removeListener (ProcessorGraph::Listener* listener)
     {
         graphListeners.remove (listener);
+    }
+
+    int ProcessorGraph::getNextInstanceId(int factoryIndex) {
+        if (factoryIdToNextInstanceIdMap.find(factoryIndex) == factoryIdToNextInstanceIdMap.end()) {
+            factoryIdToNextInstanceIdMap[factoryIndex] = 0;
+        }
+        return factoryIdToNextInstanceIdMap[factoryIndex]++;
     }
 } // namespace PlayfulTones
