@@ -20,7 +20,8 @@ namespace PlayfulTones {
     juce::StringArray ModuleFactory::getNames() const
     {
         juce::StringArray names;
-        for (const auto& pair : constructors)
+        std::map<int, Constructor> orderedConstructors(constructors.begin(), constructors.end());
+        for (const auto& pair : orderedConstructors)
             names.add(pair.second()->getName());
         return names;
     }
