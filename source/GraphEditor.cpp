@@ -909,7 +909,7 @@ namespace PlayfulTones {
         void paint (Graphics& g) override
         {
             g.setFont (Font ((float) getHeight() * 0.7f, Font::bold));
-            g.setColour (Colours::black);
+            g.setColour (Colours::white);
             g.drawFittedText (tip, 10, 0, getWidth() - 12, getHeight(), Justification::centredLeft, 1);
         }
 
