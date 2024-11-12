@@ -132,7 +132,7 @@ namespace PlayfulTones {
 
         void mouseDrag (const MouseEvent& e) override
         {
-            if (! e.mods.isPopupMenu())
+            if (! e.mods.isPopupMenu() && graph.guiConfig.nodePositionsCanBeModified)
             {
                 auto pos = originalPos + e.getOffsetFromDragStart();
 

@@ -21,6 +21,7 @@ namespace PlayfulTones {
             , enableProcessorEditorCreation(true)
             , editorOpensInSameWindow(false)
             , nodeConnectionsCanBeModified(true)
+            , nodePositionsCanBeModified(true)
             {}
 
             /*
@@ -45,6 +46,11 @@ namespace PlayfulTones {
              * Nodes in the graph can be manually connected/disconnected in the graph view.
              */
             bool nodeConnectionsCanBeModified;
+
+            /*
+             * The position of nodes can be manually modified in the graph view.
+             */
+            bool nodePositionsCanBeModified;
         };
 
 
