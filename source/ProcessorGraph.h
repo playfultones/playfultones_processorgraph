@@ -20,6 +20,7 @@ namespace PlayfulTones {
             , enableProcessorContextMenu(true)
             , enableProcessorEditorCreation(true)
             , editorOpensInSameWindow(false)
+            , nodeConnectionsCanBeModified(true)
             {}
 
             /*
@@ -39,6 +40,11 @@ namespace PlayfulTones {
              * Open the editor in the same window that hosts the graph view.
              */
             bool editorOpensInSameWindow;
+
+            /*
+             * Nodes in the graph can be manually connected/disconnected in the graph view.
+             */
+            bool nodeConnectionsCanBeModified;
         };
 
 

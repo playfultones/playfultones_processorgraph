@@ -54,6 +54,9 @@ namespace PlayfulTones {
 
         void mouseDown (const MouseEvent& e) override
         {
+            if (!panel.graph.guiConfig.nodeConnectionsCanBeModified)
+                return;
+                
             AudioProcessorGraph::NodeAndChannel dummy { {}, 0 };
 
             panel.beginConnectorDrag (isInput ? dummy : pin,
@@ -507,6 +510,9 @@ namespace PlayfulTones {
 
         bool hitTest (int x, int y) override
         {
+            if (!panel.graph.guiConfig.nodeConnectionsCanBeModified)
+                return false;
+                
             auto pos = Point<int> (x, y).toFloat();
 
             if (hitPath.contains (pos))
@@ -523,6 +529,9 @@ namespace PlayfulTones {
 
         void mouseDown (const MouseEvent&) override
         {
+            if (!panel.graph.guiConfig.nodeConnectionsCanBeModified)
+                return;
+                
             dragging = false;
         }
 
