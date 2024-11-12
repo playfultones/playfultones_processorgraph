@@ -19,6 +19,7 @@ namespace PlayfulTones {
             : enableProcessorCreationMenu(true)
             , enableProcessorContextMenu(true)
             , enableProcessorEditorCreation(true)
+            , editorOpensInSameWindow(false)
             {}
 
             /*
@@ -33,11 +34,16 @@ namespace PlayfulTones {
              * Allow the creation of new editor windows for processors (by double-clicking on the node).
              */
             bool enableProcessorEditorCreation;
+
+            /*
+             * Open the editor in the same window that hosts the graph view.
+             */
+            bool editorOpensInSameWindow;
         };
 
 
         //==============================================================================
-        ProcessorGraph (ModuleFactory& factory, GuiConfig guiConfig = GuiConfig());
+        explicit ProcessorGraph (ModuleFactory& factory, GuiConfig guiConfig = GuiConfig());
         ~ProcessorGraph();
 
         //==============================================================================

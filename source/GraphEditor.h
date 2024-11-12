@@ -11,11 +11,13 @@ namespace PlayfulTones {
     */
     class GraphEditorPanel final : public Component,
                                    public ChangeListener,
+                                   public Button::Listener,
                                    private ProcessorGraph::Listener
     {
     public:
         //==============================================================================
         explicit GraphEditorPanel (ProcessorGraph& graph);
+        void buttonClicked(Button* button) override;
         ~GraphEditorPanel() override;
 
         void paint (Graphics&) override;
@@ -55,6 +57,12 @@ namespace PlayfulTones {
         std::unique_ptr<ConnectorComponent> draggingConnector;
         std::unique_ptr<PopupMenu> menu;
         OwnedArray<ModuleWindow> activeModuleWindows;
+        
+        // Embedded editor components
+        std::unique_ptr<TextButton> backButton;
+        std::unique_ptr<juce::AudioProcessorEditor> currentEditor;
+        AudioProcessorGraph::Node::Ptr currentNode;
+        static inline const juce::String embeddedEditorNodeId = "embeddedEditorNodeId";
 
         [[nodiscard]] PluginComponent* getComponentForPlugin (AudioProcessorGraph::NodeID) const;
         [[nodiscard]] ConnectorComponent* getComponentForConnection (const AudioProcessorGraph::Connection&) const;

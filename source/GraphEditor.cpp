@@ -632,12 +632,49 @@ namespace PlayfulTones {
 
     GraphEditorPanel::~GraphEditorPanel()
     {
+        if (currentEditor != nullptr && currentNode != nullptr)
+        {
+            if (auto* processor = currentNode->getProcessor())
+                processor->editorBeingDeleted(currentEditor.get());
+        }
         graph.onProcessorWindowRequested = nullptr;
         graph.removeListener(this);
         graph.graph.removeChangeListener(this);
         draggingConnector = nullptr;
         nodes.clear();
         connectors.clear();
+    }
+
+    void GraphEditorPanel::buttonClicked(Button* button)
+    {
+        if (button == backButton.get())
+        {
+            if (currentEditor != nullptr)
+            {
+                if (currentNode != nullptr)
+                {
+                    if (auto* processor = currentNode->getProcessor())
+                        processor->editorBeingDeleted(currentEditor.get());
+                    
+                    // Clear the embedded editor node property
+                    graph.graph.getNodeForId(currentNode->nodeID)
+                        ->properties.set(embeddedEditorNodeId, 0);
+                }
+                removeChildComponent(currentEditor.get());
+                currentEditor = nullptr;
+                currentNode = nullptr;
+            }
+            backButton->setVisible(false);
+            
+            // Update components to ensure everything is properly initialized
+            updateComponents();
+            
+            // Make sure all components are visible
+            for (auto* node : nodes)
+                node->setVisible(true);
+            for (auto* connector : connectors)
+                connector->setVisible(true);
+        }
     }
 
     void GraphEditorPanel::paint (Graphics& g)
@@ -686,7 +723,16 @@ namespace PlayfulTones {
 
     void GraphEditorPanel::resized()
     {
-        updateComponents();
+        if (currentEditor != nullptr)
+        {
+            if (backButton != nullptr)
+                backButton->setBounds(10, 10, 100, 30);
+            currentEditor->setBounds(getLocalBounds().withTrimmedTop(40));
+        }
+        else
+        {
+            updateComponents();
+        }
     }
 
     void GraphEditorPanel::changeListenerCallback (ChangeBroadcaster*)
@@ -715,16 +761,57 @@ namespace PlayfulTones {
         if(node == nullptr)
             return nullptr;
 
+        if (graph.guiConfig.editorOpensInSameWindow)
+        {
+            if (auto* processor = node->getProcessor())
+            {
+                if (!processor->hasEditor())
+                    return nullptr;
+
+                // Hide all nodes and connectors
+                for (auto* n : nodes)
+                    n->setVisible(false);
+                for (auto* connector : connectors)
+                    connector->setVisible(false);
+
+                // Create back button if needed
+                if (backButton == nullptr)
+                {
+                    backButton = std::make_unique<TextButton>("<-- Back");
+                    backButton->addListener(this);
+                    addAndMakeVisible(backButton.get());
+                }
+                backButton->setVisible(true);
+                backButton->setBounds(10, 10, 100, 30);
+
+                // Create and show editor
+                currentNode = node;
+                currentEditor.reset(processor->createEditorIfNeeded());
+                if (currentEditor != nullptr)
+                {
+                    addAndMakeVisible(currentEditor.get());
+                    currentEditor->setBounds(getLocalBounds().withTrimmedTop(40));
+                    
+                    // Store the node ID of the currently open editor
+                    graph.graph.getNodeForId(node->nodeID)
+                        ->properties.set(embeddedEditorNodeId, 1);
+                }
+                
+                return nullptr; // We don't create a window in this case
+            }
+            return nullptr;
+        }
+
+        // Original window-based behavior
         for (auto* w : activeModuleWindows)
             if (w->node == node && w->type == type)
                 return w;
 
         if (auto* processor = node->getProcessor())
         {
-            if (! processor->hasEditor())
-            {
+            if (!processor->hasEditor())
                 return nullptr;
-            }
+                
             return activeModuleWindows.add (new ModuleWindow (node, type, activeModuleWindows));
         }
 
@@ -733,6 +820,33 @@ namespace PlayfulTones {
 
     void GraphEditorPanel::updateComponents()
     {
+        // Check if we need to restore an embedded editor
+        if (currentEditor == nullptr && graph.guiConfig.editorOpensInSameWindow)
+        {
+            for (auto* node : graph.graph.getNodes())
+            {
+                if (node->properties[embeddedEditorNodeId])
+                {
+                    getOrCreateWindowFor(node, ModuleWindow::Type::normal);
+                    // Early return since we don't need to show graph components when editor is active
+                    return;
+                }
+            }
+        }
+        else if (!graph.guiConfig.editorOpensInSameWindow)
+        {
+            // Restore any open editor windows when not in embedded mode
+            for (auto* node : graph.graph.getNodes())
+            {
+                for (int i = (int)ModuleWindow::Type::first; i <= (int)ModuleWindow::Type::last; ++i)
+                {
+                    auto type = (ModuleWindow::Type)i;
+                    if (node->properties[ModuleWindow::getOpenProp(type)])
+                        getOrCreateWindowFor(node, type);
+                }
+            }
+        }
+
         for (int i = nodes.size(); --i >= 0;)
             if (graph.graph.getNodeForId (nodes.getUnchecked (i)->pluginID) == nullptr)
                 nodes.remove (i);
