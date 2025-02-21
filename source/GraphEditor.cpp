@@ -342,7 +342,7 @@ namespace PlayfulTones {
             if(menu != nullptr)
                 menu->dismissAllActiveMenus();
             menu = std::make_unique<PopupMenu>();
-            menu->addItem ("Delete this filter", graph.guiConfig.enableNodeDeletion, false, [this] { graph.removeNode (pluginID); });
+            menu->addItem ("Delete this node", graph.guiConfig.enableNodeDeletion, false, [this] { graph.removeNode (pluginID); });
             menu->addItem ("Disconnect all pins", graph.guiConfig.enableNodeDisconnection, false, [this] { graph.disconnectNode(pluginID); });
             menu->addItem ("Toggle Bypass", graph.guiConfig.enableNodeBypass, false, [this]
                 {
@@ -364,8 +364,8 @@ namespace PlayfulTones {
             menu->addItem ("Test state save/load", graph.guiConfig.enableTestStateSaveLoad, false, [this] { testStateSaveLoad(); });
 
             menu->addSeparator();
-            menu->addItem ("Save plugin state", graph.guiConfig.enablePluginStateSave, false, [this] { savePluginState(); });
-            menu->addItem ("Load plugin state", graph.guiConfig.enablePluginStateLoad, false, [this] { loadPluginState(); });
+            menu->addItem ("Save node state", graph.guiConfig.enablePluginStateSave, false, [this] { savePluginState(); });
+            menu->addItem ("Load node state", graph.guiConfig.enablePluginStateLoad, false, [this] { loadPluginState(); });
 
             menu->showMenuAsync ({});
         }
