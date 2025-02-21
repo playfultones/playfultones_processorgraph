@@ -15,42 +15,147 @@ namespace PlayfulTones {
         */
         struct GuiConfig
         {
-            GuiConfig()
-            : enableProcessorCreationMenu(true)
-            , enableProcessorContextMenu(true)
-            , enableProcessorEditorCreation(true)
-            , editorOpensInSameWindow(false)
-            , nodeConnectionsCanBeModified(true)
-            , nodePositionsCanBeModified(true)
-            {}
+            GuiConfig() {}
+
+            [[nodiscard]] GuiConfig withProcessorCreationMenu(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableProcessorCreationMenu = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withProcessorContextMenu(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableProcessorContextMenu = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withProcessorEditorCreation(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableProcessorEditorCreation = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withEditorInSameWindow(bool enabled) const
+            {
+                auto copy = *this;
+                copy.editorOpensInSameWindow = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withNodeConnectionModification(bool enabled) const
+            {
+                auto copy = *this;
+                copy.nodeConnectionsCanBeModified = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withNodePositionModification(bool enabled) const
+            {
+                auto copy = *this;
+                copy.nodePositionsCanBeModified = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withNodeDeletion(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableNodeDeletion = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withNodeDisconnection(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableNodeDisconnection = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withNodeBypass(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableNodeBypass = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withShowGUI(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableShowGUI = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withShowPrograms(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableShowPrograms = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withShowParameters(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableShowParameters = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withShowDebugLog(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableShowDebugLog = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withTestStateSaveLoad(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enableTestStateSaveLoad = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withPluginStateSave(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enablePluginStateSave = enabled;
+                return copy;
+            }
+
+            [[nodiscard]] GuiConfig withPluginStateLoad(bool enabled) const
+            {
+                auto copy = *this;
+                copy.enablePluginStateLoad = enabled;
+                return copy;
+            }
 
             /*
              * Allow the creation of new processors from the context menu (by right-clicking on the background).
              */
-            bool enableProcessorCreationMenu;
+            bool enableProcessorCreationMenu = true;
             /*
              * Allow the context menu to be opened for processors (by right-clicking on the node).
              */
-            bool enableProcessorContextMenu;
+            bool enableProcessorContextMenu = true;
             /*
              * Allow the creation of new editor windows for processors (by double-clicking on the node).
              */
-            bool enableProcessorEditorCreation;
+            bool enableProcessorEditorCreation = true;
 
             /*
              * Open the editor in the same window that hosts the graph view.
              */
-            bool editorOpensInSameWindow;
+            bool editorOpensInSameWindow = false;
 
             /*
              * Nodes in the graph can be manually connected/disconnected in the graph view.
              */
-            bool nodeConnectionsCanBeModified;
+            bool nodeConnectionsCanBeModified = true;
 
             /*
              * The position of nodes can be manually modified in the graph view.
              */
-            bool nodePositionsCanBeModified;
+            bool nodePositionsCanBeModified = true;
 
             /*
              * Allow deleting nodes from the context menu
