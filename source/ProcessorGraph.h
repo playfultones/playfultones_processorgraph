@@ -51,6 +51,56 @@ namespace PlayfulTones {
              * The position of nodes can be manually modified in the graph view.
              */
             bool nodePositionsCanBeModified;
+
+            /*
+             * Allow deleting nodes from the context menu
+             */
+            bool enableNodeDeletion = true;
+
+            /*
+             * Allow disconnecting all pins from the context menu
+             */
+            bool enableNodeDisconnection = true;
+
+            /*
+             * Allow bypassing nodes from the context menu
+             */
+            bool enableNodeBypass = true;
+
+            /*
+             * Allow showing the GUI editor from the context menu
+             */
+            bool enableShowGUI = true;
+
+            /*
+             * Allow showing all programs from the context menu
+             */
+            bool enableShowPrograms = true;
+
+            /*
+             * Allow showing all parameters from the context menu
+             */
+            bool enableShowParameters = true;
+
+            /*
+             * Allow showing debug log from the context menu
+             */
+            bool enableShowDebugLog = true;
+
+            /*
+             * Allow testing state save/load from the context menu
+             */
+            bool enableTestStateSaveLoad = true;
+
+            /*
+             * Allow saving plugin state from the context menu
+             */
+            bool enablePluginStateSave = true;
+
+            /*
+             * Allow loading plugin state from the context menu
+             */
+            bool enablePluginStateLoad = true;
         };
 
 

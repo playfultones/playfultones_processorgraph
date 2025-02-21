@@ -297,10 +297,10 @@ namespace PlayfulTones {
         {
             if(menu != nullptr)
                 menu->dismissAllActiveMenus();
-            menu = std::make_unique<PopupMenu> ();
-            menu->addItem ("Delete this filter", [this] { graph.removeNode (pluginID); });
-            menu->addItem ("Disconnect all pins", [this] { graph.disconnectNode(pluginID); });
-            menu->addItem ("Toggle Bypass", [this]
+            menu = std::make_unique<PopupMenu>();
+            menu->addItem ("Delete this filter", graph.guiConfig.enableNodeDeletion, false, [this] { graph.removeNode (pluginID); });
+            menu->addItem ("Disconnect all pins", graph.guiConfig.enableNodeDisconnection, false, [this] { graph.disconnectNode(pluginID); });
+            menu->addItem ("Toggle Bypass", graph.guiConfig.enableNodeBypass, false, [this]
                 {
                     if (auto* node = graph.graph.getNodeForId (pluginID))
                         node->setBypassed (! node->isBypassed());
@@ -310,18 +310,18 @@ namespace PlayfulTones {
 
             menu->addSeparator();
             if (getProcessor()->hasEditor())
-                menu->addItem ("Show GUI", [this] { showWindow (ModuleWindow::Type::normal); });
+                menu->addItem ("Show GUI", graph.guiConfig.enableShowGUI, false, [this] { showWindow (ModuleWindow::Type::normal); });
 
-            menu->addItem ("Show all programs", [this] { showWindow (ModuleWindow::Type::programs); });
-            menu->addItem ("Show all parameters", [this] { showWindow (ModuleWindow::Type::generic); });
-            menu->addItem ("Show debug log", [this] { showWindow (ModuleWindow::Type::debug); });
-
-            menu->addSeparator();
-            menu->addItem ("Test state save/load", [this] { testStateSaveLoad(); });
+            menu->addItem ("Show all programs", graph.guiConfig.enableShowPrograms, false, [this] { showWindow (ModuleWindow::Type::programs); });
+            menu->addItem ("Show all parameters", graph.guiConfig.enableShowParameters, false, [this] { showWindow (ModuleWindow::Type::generic); });
+            menu->addItem ("Show debug log", graph.guiConfig.enableShowDebugLog, false, [this] { showWindow (ModuleWindow::Type::debug); });
 
             menu->addSeparator();
-            menu->addItem ("Save plugin state", [this] { savePluginState(); });
-            menu->addItem ("Load plugin state", [this] { loadPluginState(); });
+            menu->addItem ("Test state save/load", graph.guiConfig.enableTestStateSaveLoad, false, [this] { testStateSaveLoad(); });
+
+            menu->addSeparator();
+            menu->addItem ("Save plugin state", graph.guiConfig.enablePluginStateSave, false, [this] { savePluginState(); });
+            menu->addItem ("Load plugin state", graph.guiConfig.enablePluginStateLoad, false, [this] { loadPluginState(); });
 
             menu->showMenuAsync ({});
         }
