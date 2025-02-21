@@ -172,6 +172,18 @@ namespace PlayfulTones {
             return x >= 3 && x < getWidth() - 6 && y >= pinSize && y < getHeight() - pinSize;
         }
 
+        void mouseEnter(const MouseEvent&) override
+        {
+            isHovered = true;
+            repaint();
+        }
+
+        void mouseExit(const MouseEvent&) override
+        {
+            isHovered = false;
+            repaint();
+        }
+
         void paint (Graphics& g) override
         {
             auto boxArea = getLocalBounds().reduced (4, pinSize);
@@ -187,6 +199,14 @@ namespace PlayfulTones {
 
             g.setColour (boxColour);
             g.fillRect (boxArea.toFloat());
+
+            // Draw hover effect
+            if (isHovered)
+            {
+                g.setColour (Colours::white.withAlpha (0.3f));
+                float borderThickness = 2.0f;
+                g.drawRect (boxArea.toFloat(), borderThickness);
+            }
 
             g.setColour (findColour (TextEditor::textColourId));
             g.setFont (font);
@@ -419,6 +439,7 @@ namespace PlayfulTones {
         DropShadowEffect shadow;
         std::unique_ptr<PopupMenu> menu;
         std::unique_ptr<FileChooser> fileChooser;
+        bool isHovered = false;
     };
 
 
