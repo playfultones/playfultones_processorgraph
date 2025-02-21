@@ -210,7 +210,7 @@ namespace PlayfulTones {
 
 
         //==============================================================================
-        explicit ProcessorGraph (ModuleFactory& factory, GuiConfig guiConfig = GuiConfig());
+        explicit ProcessorGraph (ModuleFactory factory, GuiConfig guiConfig = GuiConfig());
         ~ProcessorGraph();
 
         //==============================================================================
@@ -270,7 +270,7 @@ namespace PlayfulTones {
 
         //==============================================================================
         AudioProcessorGraph graph;
-        ModuleFactory& factory;
+        ModuleFactory factory;
         const GuiConfig guiConfig;
 
         //==============================================================================

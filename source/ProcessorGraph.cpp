@@ -3,8 +3,8 @@
 //
 
 namespace PlayfulTones {
-    ProcessorGraph::ProcessorGraph (ModuleFactory& f, GuiConfig guiC)
-        : factory (f), guiConfig(guiC)
+    ProcessorGraph::ProcessorGraph (ModuleFactory f, GuiConfig guiC)
+        : factory (std::move(f)), guiConfig(guiC)
     {
     }
 
