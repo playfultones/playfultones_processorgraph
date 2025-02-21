@@ -108,7 +108,6 @@ namespace PlayfulTones {
         ~GraphEditor() override;
 
     private:
-        juce::AudioProcessor& audioProcessor;
         GraphDocumentComponent graphDocumentComponent;
 
         void resized() override;

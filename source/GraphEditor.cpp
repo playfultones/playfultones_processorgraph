@@ -1098,7 +1098,6 @@ namespace PlayfulTones {
 
     GraphEditor::GraphEditor (juce::AudioProcessor& p, ProcessorGraph& g)
         : AudioProcessorEditor (&p),
-          audioProcessor (p),
           graphDocumentComponent(g)
     {
         addAndMakeVisible(graphDocumentComponent);
