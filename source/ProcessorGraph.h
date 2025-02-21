@@ -129,6 +129,13 @@ namespace PlayfulTones {
                 return copy;
             }
 
+            [[nodiscard]] GuiConfig withEditorSingleClick(bool enabled) const
+            {
+                auto copy = *this;
+                copy.openEditorWithSingleClick = enabled;
+                return copy;
+            }
+
             /*
              * Allow the creation of new processors from the context menu (by right-clicking on the background).
              */
@@ -206,6 +213,11 @@ namespace PlayfulTones {
              * Allow loading plugin state from the context menu
              */
             bool enablePluginStateLoad = true;
+
+            /*
+             * Open editor with single click instead of double click
+             */
+            bool openEditorWithSingleClick = false;
         };
 
 

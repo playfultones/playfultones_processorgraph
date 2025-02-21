@@ -170,7 +170,8 @@ namespace PlayfulTones {
             {
                 graph.graph.sendChangeMessage();
             }
-            else if (e.getNumberOfClicks() == 2 && graph.guiConfig.enableProcessorEditorCreation)
+            else if (!e.mods.isPopupMenu() && graph.guiConfig.enableProcessorEditorCreation &&
+                     (graph.guiConfig.openEditorWithSingleClick || e.getNumberOfClicks() == 2))
             {
                 if (auto f = graph.graph.getNodeForId (pluginID))
                     if (auto* w = panel.getOrCreateWindowFor (f, ModuleWindow::Type::normal))
