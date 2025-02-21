@@ -122,6 +122,10 @@ namespace PlayfulTones {
 
         void mouseDown (const MouseEvent& e) override
         {
+            if (auto* node = graph.graph.getNodeForId(pluginID))
+                if (!node->properties[graph.isInteractableId])
+                    return;
+
             originalPos = localPointToGlobal (Point<int>());
 
             toFront (true);
@@ -132,6 +136,10 @@ namespace PlayfulTones {
 
         void mouseDrag (const MouseEvent& e) override
         {
+            if (auto* node = graph.graph.getNodeForId(pluginID))
+                if (!node->properties[graph.isInteractableId])
+                    return;
+
             if (! e.mods.isPopupMenu() && graph.guiConfig.nodePositionsCanBeModified)
             {
                 auto pos = originalPos + e.getOffsetFromDragStart();
@@ -151,6 +159,10 @@ namespace PlayfulTones {
 
         void mouseUp (const MouseEvent& e) override
         {
+            if (auto* node = graph.graph.getNodeForId(pluginID))
+                if (!node->properties[graph.isInteractableId])
+                    return;
+
             if (e.mouseWasDraggedSinceMouseDown())
             {
                 graph.graph.sendChangeMessage();
@@ -174,12 +186,20 @@ namespace PlayfulTones {
 
         void mouseEnter(const MouseEvent&) override
         {
+            if (auto* node = graph.graph.getNodeForId(pluginID))
+                if (!node->properties[graph.isInteractableId])
+                    return;
+
             isHovered = true;
             repaint();
         }
 
         void mouseExit(const MouseEvent&) override
         {
+            if (auto* node = graph.graph.getNodeForId(pluginID))
+                if (!node->properties[graph.isInteractableId])
+                    return;
+
             isHovered = false;
             repaint();
         }

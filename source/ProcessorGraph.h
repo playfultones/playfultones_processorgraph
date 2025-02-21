@@ -226,7 +226,7 @@ namespace PlayfulTones {
         std::unique_ptr<XmlElement> createXml() const;
         void restoreFromXml (const XmlElement&);
 
-        juce::AudioProcessorGraph::Node::Ptr createModule (int factoryId, double x = .5, double y = .5);
+        juce::AudioProcessorGraph::Node::Ptr createModule (int factoryId, double x = .5, double y = .5, bool isInteractable = true);
         void addConnection(const AudioProcessorGraph::Connection&);
         void removeConnection(const AudioProcessorGraph::Connection&);
         void removeNode(NodeID);
@@ -279,6 +279,7 @@ namespace PlayfulTones {
         static inline const juce::String factoryId = "factoryId";
         static inline const juce::String instanceId = "nodeInstanceId";
         static inline const juce::String nodeId = "uid";
+        static inline const juce::String isInteractableId = "isInteractable";
 
         static inline const juce::String valueTag = "value";
         static inline const juce::String nameTag = "name";

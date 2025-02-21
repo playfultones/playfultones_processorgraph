@@ -355,7 +355,7 @@ namespace PlayfulTones {
             disconnectNode (node->nodeID);
     }
 
-    juce::AudioProcessorGraph::Node::Ptr ProcessorGraph::createModule (int factoryIndex, double x, double y)
+    juce::AudioProcessorGraph::Node::Ptr ProcessorGraph::createModule (int factoryIndex, double x, double y, bool isInteractable)
     {
         auto node = graph.addNode (factory.createProcessor(factoryIndex));
         if(node == nullptr)
@@ -365,6 +365,7 @@ namespace PlayfulTones {
         node->properties.set (yPosId, y);
         node->properties.set(factoryId, factoryIndex);
         node->properties.set(instanceId, getNextInstanceId(factoryIndex));
+        node->properties.set(isInteractableId, isInteractable);
         graphListeners.call(&Listener::nodeAdded, node->nodeID);
         return node;
     }
