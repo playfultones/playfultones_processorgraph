@@ -731,15 +731,17 @@ namespace PlayfulTones {
         return nullptr;
     }
 
+    static const int headerHeight = 35;
+    
     void GraphEditorPanel::resized()
     {
         if (currentEditor != nullptr)
         {
             if (backButton != nullptr)
-                backButton->setBounds(10, 10, 100, 30);
+                backButton->setBounds(0, 0, 100, headerHeight);
             if (processorNameLabel != nullptr)
-                processorNameLabel->setBounds(getWidth() / 2 - 150, 10, 300, 30);
-            currentEditor->setBounds(getLocalBounds().withTrimmedTop(40));
+                processorNameLabel->setBounds(getWidth() / 2 - 150, 0, 300, headerHeight);
+            currentEditor->setBounds(getLocalBounds().withTrimmedTop(headerHeight));
         }
         else
         {
@@ -794,7 +796,7 @@ namespace PlayfulTones {
                     addAndMakeVisible(backButton.get());
                 }
                 backButton->setVisible(true);
-                backButton->setBounds(10, 10, 100, 30);
+                backButton->setBounds(5, 0, 100, headerHeight);
 
                 // Create and setup processor name label
                 if (processorNameLabel == nullptr)
@@ -806,7 +808,7 @@ namespace PlayfulTones {
                 }
                 processorNameLabel->setText(processor->getName(), dontSendNotification);
                 processorNameLabel->setVisible(true);
-                processorNameLabel->setBounds(getWidth() / 2 - 150, 10, 300, 30);
+                processorNameLabel->setBounds(getWidth() / 2 - 150, 0, 300, headerHeight);
 
                 // Create and show editor
                 currentNode = node;
