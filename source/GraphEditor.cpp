@@ -674,6 +674,7 @@ namespace PlayfulTones {
                 currentNode = nullptr;
             }
             backButton->setVisible(false);
+            processorNameLabel->setVisible(false);
             
             // Update components to ensure everything is properly initialized
             updateComponents();
@@ -736,6 +737,8 @@ namespace PlayfulTones {
         {
             if (backButton != nullptr)
                 backButton->setBounds(10, 10, 100, 30);
+            if (processorNameLabel != nullptr)
+                processorNameLabel->setBounds(getWidth() / 2 - 150, 10, 300, 30);
             currentEditor->setBounds(getLocalBounds().withTrimmedTop(40));
         }
         else
@@ -792,6 +795,18 @@ namespace PlayfulTones {
                 }
                 backButton->setVisible(true);
                 backButton->setBounds(10, 10, 100, 30);
+
+                // Create and setup processor name label
+                if (processorNameLabel == nullptr)
+                {
+                    processorNameLabel = std::make_unique<Label>();
+                    processorNameLabel->setJustificationType(Justification::centred);
+                    processorNameLabel->setFont(Font(16.0f, Font::bold));
+                    addAndMakeVisible(processorNameLabel.get());
+                }
+                processorNameLabel->setText(processor->getName(), dontSendNotification);
+                processorNameLabel->setVisible(true);
+                processorNameLabel->setBounds(getWidth() / 2 - 150, 10, 300, 30);
 
                 // Create and show editor
                 currentNode = node;

@@ -60,6 +60,7 @@ namespace PlayfulTones {
         
         // Embedded editor components
         std::unique_ptr<TextButton> backButton;
+        std::unique_ptr<Label> processorNameLabel;
         std::unique_ptr<juce::AudioProcessorEditor> currentEditor;
         AudioProcessorGraph::Node::Ptr currentNode;
         static inline const juce::String embeddedEditorNodeId = "embeddedEditorNodeId";
