@@ -9,29 +9,32 @@ namespace PlayfulTones {
         PinComponent (GraphEditorPanel& p, AudioProcessorGraph::NodeAndChannel pinToUse, bool isIn)
             : panel (p), graph (p.graph), pin (pinToUse), isInput (isIn)
         {
-            if (auto node = graph.graph.getNodeForId (pin.nodeID))
+            if (graph.guiConfig.nodeConnectionsCanBeModified)
             {
-                String tip;
-
-                if (pin.isMIDI())
+                if (auto node = graph.graph.getNodeForId (pin.nodeID))
                 {
-                    tip = isInput ? "MIDI Input"
-                                  : "MIDI Output";
-                }
-                else
-                {
-                    auto& processor = *node->getProcessor();
-                    auto channel = processor.getOffsetInBusBufferForAbsoluteChannelIndex (isInput, pin.channelIndex, busIdx);
+                    String tip;
 
-                    if (auto* bus = processor.getBus (isInput, busIdx))
-                        tip = bus->getName() + ": " + AudioChannelSet::getAbbreviatedChannelTypeName (bus->getCurrentLayout().getTypeOfChannel (channel));
+                    if (pin.isMIDI())
+                    {
+                        tip = isInput ? "MIDI Input"
+                                      : "MIDI Output";
+                    }
                     else
-                        tip = (isInput ? "Main Input: "
-                                       : "Main Output: ") + String (pin.channelIndex + 1);
+                    {
+                        auto& processor = *node->getProcessor();
+                        auto channel = processor.getOffsetInBusBufferForAbsoluteChannelIndex (isInput, pin.channelIndex, busIdx);
 
+                        if (auto* bus = processor.getBus (isInput, busIdx))
+                            tip = bus->getName() + ": " + AudioChannelSet::getAbbreviatedChannelTypeName (bus->getCurrentLayout().getTypeOfChannel (channel));
+                        else
+                            tip = (isInput ? "Main Input: "
+                                           : "Main Output: ") + String (pin.channelIndex + 1);
+
+                    }
+
+                    SettableTooltipClient::setTooltip (tip);
                 }
-
-                SettableTooltipClient::setTooltip (tip);
             }
 
             setSize (16, 16);
