@@ -1158,12 +1158,17 @@ namespace PlayfulTones {
         graphPanel->setBounds (r);
     }
 
+    static constexpr auto MIN_WIDTH = 600;
+    static constexpr auto MIN_HEIGHT = 400;
+
     GraphEditor::GraphEditor (juce::AudioProcessor& p, ProcessorGraph& g)
-        : AudioProcessorEditor (&p),
-          graphDocumentComponent(g)
+        : AudioProcessorEditor (&p)
+        , graphDocumentComponent(g)
     {
         addAndMakeVisible(graphDocumentComponent);
-        setSize (600, 400);
+        setSize (MIN_WIDTH, MIN_HEIGHT);
+        setResizable(true, true);
+        setResizeLimits(MIN_WIDTH, MIN_HEIGHT, MIN_WIDTH * 10, MIN_HEIGHT * 10);
     }
 
     GraphEditor::~GraphEditor()= default;
@@ -1175,12 +1180,14 @@ namespace PlayfulTones {
     }
 
     GraphWindow::GraphWindow (ProcessorGraph& g)
-            : DocumentWindow("Graph", Colours::lightgrey, DocumentWindow::allButtons, true)
-            , graphDocumentComponent(g)
+        : DocumentWindow("Graph", Colours::lightgrey, DocumentWindow::allButtons, true)
+        , graphDocumentComponent(g)
     {
         setUsingNativeTitleBar (true);
         setContentOwned (&graphDocumentComponent, true);
-        centreWithSize (800, 600);
+        centreWithSize (MIN_WIDTH, MIN_HEIGHT);
+        setResizable(true, true);
+        setResizeLimits(MIN_WIDTH, MIN_HEIGHT, MIN_WIDTH * 10, MIN_HEIGHT * 10);
     }
 
     GraphWindow::~GraphWindow() = default;
