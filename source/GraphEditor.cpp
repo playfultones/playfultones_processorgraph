@@ -398,9 +398,17 @@ namespace PlayfulTones {
 
         void handleAsyncUpdate() override { repaint(); }
 
+        constexpr static auto kSaveFileLabel = "Save node state";
         void savePluginState()
         {
-            fileChooser = std::make_unique<FileChooser> ("Save plugin state");
+            if (graph.guiConfig.saveNodeStateAsTextFile)
+            {
+                fileChooser = std::make_unique<FileChooser> (kSaveFileLabel, File(), "*.xml");
+            }
+            else
+            {
+                fileChooser = std::make_unique<FileChooser> (kSaveFileLabel);
+            }
 
             const auto onChosen = [ref = SafePointer<PluginComponent> (this)] (const FileChooser& chooser)
             {
@@ -423,7 +431,6 @@ namespace PlayfulTones {
                     }
                     else
                     {
-                        // Save as binary file
                         result.replaceWithData (block.getData(), block.getSize());
                     }
                 }
@@ -432,9 +439,17 @@ namespace PlayfulTones {
             fileChooser->launchAsync (FileBrowserComponent::saveMode | FileBrowserComponent::warnAboutOverwriting, onChosen);
         }
 
+        constexpr static auto kLoadFileLabel = "Load node state";
         void loadPluginState()
         {
-            fileChooser = std::make_unique<FileChooser> ("Load plugin state");
+            if (graph.guiConfig.saveNodeStateAsTextFile)
+            {
+                fileChooser = std::make_unique<FileChooser> (kLoadFileLabel, File(), "*.xml");
+            }
+            else
+            {
+                fileChooser = std::make_unique<FileChooser> (kLoadFileLabel);
+            }
 
             const auto onChosen = [ref = SafePointer<PluginComponent> (this)] (const FileChooser& chooser)
             {
