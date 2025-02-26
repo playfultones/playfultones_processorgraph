@@ -416,7 +416,16 @@ namespace PlayfulTones {
                 {
                     MemoryBlock block;
                     node->getProcessor()->getStateInformation (block);
-                    result.replaceWithData (block.getData(), block.getSize());
+                    
+                    if (ref->graph.guiConfig.saveNodeStateAsTextFile)
+                    {
+                        result.replaceWithText(block.toString());
+                    }
+                    else
+                    {
+                        // Save as binary file
+                        result.replaceWithData (block.getData(), block.getSize());
+                    }
                 }
             };
 

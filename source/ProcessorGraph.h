@@ -136,6 +136,13 @@ namespace PlayfulTones {
                 return copy;
             }
 
+            [[nodiscard]] GuiConfig withNodeStateSavedAsTextFile(bool enabled) const
+            {
+                auto copy = *this;
+                copy.saveNodeStateAsTextFile = enabled;
+                return copy;
+            }
+
             /*
              * Allow the creation of new processors from the context menu (by right-clicking on the background).
              */
@@ -218,6 +225,11 @@ namespace PlayfulTones {
              * Open editor with single click instead of double click
              */
             bool openEditorWithSingleClick = false;
+
+            /*
+             * Save the node state as a text file instead of a binary file
+             */
+            bool saveNodeStateAsTextFile = false;
         };
 
 
